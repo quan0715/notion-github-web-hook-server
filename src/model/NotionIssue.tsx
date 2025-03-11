@@ -1,44 +1,14 @@
 import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
 import { NOTION_FIELDS } from "@/lib/config/notionConfig";
 import { IssueRepoInfo } from "@/lib/client";
-type NotionFile = {
-  name: string;
-  url: string;
-};
 
 type NotionIssue = {
   title: string;
   labels: string[];
   issue_link: string;
   issue_id: number;
-  files: NotionFile[];
   repo: IssueRepoInfo | undefined;
 };
-
-type NotionExternalFile = {
-  type?: "external";
-  name: string;
-  external: { url: string };
-};
-
-type NotionInternalFile = {
-  type?: "file";
-  name: string;
-  file: { url: string; expiry_time: string };
-};
-
-type NotionFileObject = NotionExternalFile | NotionInternalFile;
-
-function isExternalFile(file: NotionFileObject): file is NotionExternalFile {
-  return file.type === "external";
-}
-
-function getFileUrl(file: NotionFileObject): string {
-  if (isExternalFile(file)) {
-    return file.external.url;
-  }
-  return file.file.url;
-}
 
 export function NotionPageDto(notionPage: PageObjectResponse): NotionIssue {
   const titleField = notionPage.properties[NOTION_FIELDS.fields.ISSUE_TITLE];
@@ -52,21 +22,9 @@ export function NotionPageDto(notionPage: PageObjectResponse): NotionIssue {
     issueLinkValue = issueLinkField.url;
   }
 
-  // 處理 files 欄位
-  // let filesArray: NotionFileObject[] = [];
-  // const filesField = notionPage.properties[NOTION_FIELDS.fields.FILES];
-  // if (filesField && filesField.type === "files") {
-  //   filesArray = filesField.files as NotionFileObject[];
-  // }
-
   const issue_id = issueLinkValue
     ? parseInt(issueLinkValue.split("/").pop() || "0")
     : 0;
-
-  // const files = filesArray.map((file: NotionFileObject) => ({
-  //   name: file.name,
-  //   url: getFileUrl(file),
-  // }));
 
   // 處理 repo 欄位
   let issueRepo = undefined;
@@ -95,7 +53,6 @@ export function NotionPageDto(notionPage: PageObjectResponse): NotionIssue {
         : [],
     issue_link: issueLinkValue,
     issue_id,
-    files: [],
     repo: issueRepo,
   };
 }

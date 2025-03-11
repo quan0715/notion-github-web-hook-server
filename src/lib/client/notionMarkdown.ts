@@ -5,8 +5,6 @@ import { convertRichTextToPlainText } from "../helper/notion";
 import {
   ImageBlockObjectResponse,
   FileBlockObjectResponse,
-  NumberedListItemBlockObjectResponse,
-  BulletedListItemBlockObjectResponse,
 } from "@notionhq/client/build/src/api-endpoints";
 // 將 Notion 的 Block 轉換為 Markdown
 
@@ -79,7 +77,7 @@ function coverImageToMarkdown(block: ImageBlockObjectResponse) {
 function fileToMarkdown(block: FileBlockObjectResponse) {
   console.log(block);
   let url = "";
-  let fileName = block.file.name;
+  const fileName = block.file.name;
   if (block.file.type === "external") {
     url = block.file.external.url;
   } else {
