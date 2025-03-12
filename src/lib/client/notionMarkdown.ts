@@ -8,6 +8,12 @@ import {
 } from "@notionhq/client/build/src/api-endpoints";
 // 將 Notion 的 Block 轉換為 Markdown
 
+// 獲取基礎 URL，如果環境變數不存在則使用相對路徑
+const BASE_URL =
+  process.env.NODE_ENV === "development"
+    ? process.env.TEST_BASE_URL
+    : process.env.NEXT_PUBLIC_BASE_URL || "";
+
 export const notionToMarkdown = async (pageId: string) => {
   const blocks = await collectPaginatedAPI(notionClient.blocks.children.list, {
     block_id: pageId,
@@ -65,23 +71,20 @@ export const notionToMarkdown = async (pageId: string) => {
 };
 
 function coverImageToMarkdown(block: ImageBlockObjectResponse) {
-  let url = "";
-  if (block.image.type === "external") {
-    url = block.image.external.url;
-  } else {
-    url = block.image.file.url;
-  }
-  return `![${block.id}](${url})`;
+  // 使用相對路徑，避免 Ngrok 警告頁面問題
+  const proxyUrl = `${BASE_URL}/api/proxy/image?block_id=${block.id}`;
+  // 獲取圖片標題，如果沒有則使用區塊 ID
+  const caption =
+    block.image.caption.length > 0
+      ? convertRichTextToPlainText(block.image.caption)
+      : block.id;
+  return `![${caption}](${proxyUrl})`;
 }
 
-function fileToMarkdown(block: FileBlockObjectResponse) {
-  console.log(block);
-  let url = "";
+function fileToMarkdown(block: any) {
+  // 使用相對路徑，避免 Ngrok 警告頁面問題
+  const proxyUrl = `${BASE_URL}/api/proxy/file?block_id=${block.id}`;
+  // 獲取檔案標題，如果沒有則使用區塊 ID
   const fileName = block.file.name;
-  if (block.file.type === "external") {
-    url = block.file.external.url;
-  } else {
-    url = block.file.file.url;
-  }
-  return `[${fileName}](${url})`;
+  return `[${fileName}](${proxyUrl})`;
 }
