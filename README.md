@@ -1,5 +1,9 @@
 # Notion-GitHub Webhook 伺服器
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fyourusername%2Fweb_hook_server&env=NOTION_SECRET,GITHUB_TOKEN,BASE_URL,TEST_BASE_URL&envDescription=API%20金鑰和環境變數設定&envLink=https%3A%2F%2Fgithub.com%2Fyourusername%2Fweb_hook_server%23環境變數設定&project-name=notion-github-webhook&repository-name=notion-github-webhook)
+
+這個專案是一個連接 Notion 和 GitHub 的 Webhook 伺服器，可以讓你在 Notion 資料庫中建立和管理 GitHub Issues。當 Notion 資料庫中的項目更新時，系統會自動在 GitHub 上建立或更新對應的 Issue。
+
 ## 功能特色
 
 - 🔄 雙向同步：Notion 資料庫與 GitHub Issues 之間的雙向同步
@@ -7,13 +11,33 @@
 - 🔔 狀態更新：當 GitHub Issue 狀態變更時，自動更新 Notion 中的狀態
 - 📊 日誌記錄：在 Notion 頁面中記錄所有操作的日誌
 - 🖼️ 圖片代理：處理 Notion 中的圖片和檔案，避免 URL 過期問題
+- 📱 響應式設計：適用於各種裝置的使用者介面
+- 🔒 安全性：使用環境變數保護 API 金鑰和敏感資訊
+- 🛠️ 配置驗證：提供配置狀態頁面，方便檢查和驗證設定
 
 ## 前置需求
 
 - [Node.js](https://nodejs.org/) 18.0.0 或更高版本
 - [Notion](https://www.notion.so/) 帳號和工作區
 - [GitHub](https://github.com/) 帳號和儲存庫
-- [Vercel](https://vercel.com/) 帳號（用於部署）
+- [Vercel](https://vercel.com/) 帳號（用於部署，或選擇其他部署平台）
+
+## 快速開始
+
+### 一鍵部署到 Vercel
+
+點擊上方的「Deploy with Vercel」按鈕，按照指示完成部署。部署後，你需要設定環境變數和 Notion/GitHub 整合。
+
+### 環境變數設定
+
+本專案需要以下環境變數：
+
+| 環境變數        | 必要性 | 說明                                                   |
+| --------------- | ------ | ------------------------------------------------------ |
+| `NOTION_SECRET` | 必要   | Notion API 整合令牌，用於訪問和修改 Notion 資料庫      |
+| `GITHUB_TOKEN`  | 必要   | GitHub 個人訪問令牌，用於建立和更新 Issues             |
+| `BASE_URL`      | 必要   | 應用程式的基礎 URL，例如 `https://your-app.vercel.app` |
+| `TEST_BASE_URL` | 選用   | 本地開發時的測試 URL，例如 ngrok 提供的臨時 URL        |
 
 ## 設定指南
 
@@ -36,9 +60,9 @@
 
 1. 在 Notion 中建立一個新的資料庫（或使用現有的）
 2. 確保資料庫包含以下屬性：
-   - Issue Title（標題）
-   - Issue Body（內容）
-   - Issue Tag（標籤）
+   - Issue Title（標題）- 標題類型
+   - Issue Body（內容）- 多行文字類型
+   - Issue Tag（標籤）- 多選類型
    - Repository（儲存庫）- 多選類型
    - Status（狀態）- 狀態類型
    - Issue Link（連結）- URL 類型
@@ -89,9 +113,8 @@ npm install
 ```
 NOTION_SECRET=你的_Notion_整合令牌
 GITHUB_TOKEN=你的_GitHub_個人訪問令牌
-GITHUB_CLIENT_ID=你的_GitHub_OAuth_應用程式_ID
-GITHUB_CLIENT_SECRET=你的_GitHub_OAuth_應用程式密鑰
-NEXT_PUBLIC_BASE_URL=http://localhost:3000
+TEST_BASE_URL=https://your-ngrok-url.ngrok-free.app
+BASE_URL=https://your-app.vercel.app
 ```
 
 4. 更新 `src/lib/config/notionConfig.ts` 檔案，設定你的 Notion 資料庫欄位和允許的儲存庫：
@@ -181,7 +204,7 @@ vercel
    - 前往你的專案設定
    - 點擊「Environment Variables」
    - 添加與 `.env.local` 檔案中相同的環境變數
-   - 將 `NEXT_PUBLIC_BASE_URL` 設定為你的 Vercel 部署 URL
+   - 將 `BASE_URL` 設定為你的 Vercel 部署 URL
 
 7. 重新部署專案以應用環境變數：
 
@@ -192,6 +215,19 @@ vercel --prod
 8. 更新 GitHub Webhook 的 Payload URL 為你的 Vercel 部署 URL + `/api/webhook`
 
 ## 使用指南
+
+### 配置狀態頁面
+
+專案提供了一個配置狀態頁面，可以幫助你檢查和驗證設定是否正確：
+
+1. 訪問應用程式的根路徑（例如 `https://your-app.vercel.app` 或本地開發時的 `http://localhost:3000`）
+2. 頁面將顯示環境變數的配置狀態
+3. 使用驗證工具按鈕來測試：
+   - **驗證 Notion Token**：檢查 Notion API 令牌是否有效
+   - **驗證 Notion 資料庫欄位**：檢查資料庫是否包含所需的欄位
+   - **驗證 GitHub Token**：檢查 GitHub API 令牌是否有效，並且可以訪問配置的儲存庫
+
+這個頁面可以幫助你快速診斷配置問題，確保 Webhook 伺服器能夠正常運作。
 
 ### 在 Notion 中建立 Issue
 
@@ -207,6 +243,22 @@ vercel --prod
 ### 查看操作日誌
 
 每個 Notion 頁面頂部都有一個「Webhook Log」區塊，記錄了所有與該頁面相關的操作。
+
+## 系統架構
+
+本專案使用以下技術和架構：
+
+- **前端**：Next.js、React、Tailwind CSS
+- **後端**：Next.js API Routes
+- **資料庫**：使用 Notion 作為資料庫
+- **API**：Notion API、GitHub API
+- **部署**：Vercel
+
+系統流程：
+
+1. 當 Notion 資料庫中的項目更新時，系統會檢查是否需要建立或更新 GitHub Issue
+2. 當 GitHub Issue 狀態變更時，Webhook 會接收通知並更新 Notion 中的狀態
+3. 所有操作都會記錄在 Notion 頁面的日誌區塊中
 
 ## 故障排除
 
@@ -232,58 +284,12 @@ vercel --prod
 
 本專案支援將以下 Notion Block 類型轉換為 Markdown：
 
-| Notion Block 類型        | Markdown 轉換                | 說明                                               |
-| ------------------------ | ---------------------------- | -------------------------------------------------- |
-| 段落 (Paragraph)         | 純文字                       | 支援粗體、斜體、刪除線、下劃線、程式碼、連結等格式 |
-| 標題 1 (Heading 1)       | `# 標題`                     | 一級標題                                           |
-| 標題 2 (Heading 2)       | `## 標題`                    | 二級標題                                           |
-| 標題 3 (Heading 3)       | `### 標題`                   | 三級標題                                           |
-| 圖片 (Image)             | `![圖片說明](圖片URL)`       | 使用代理 API 避免 URL 過期問題                     |
-| 檔案 (File)              | `[檔案名稱](檔案URL)`        | 使用代理 API 避免 URL 過期問題                     |
-| 編號清單 (Numbered List) | `1. 項目`                    | 轉換為 Markdown 編號清單                           |
-| 項目清單 (Bulleted List) | `- 項目`                     | 轉換為 Markdown 項目清單                           |
-| 分隔線 (Divider)         | `---`                        | 水平分隔線                                         |
-| 待辦事項 (To-do)         | `- [ ] 項目` 或 `- [x] 項目` | 根據是否已完成顯示不同格式                         |
-| 引用 (Quote)             | `> 引用內容`                 | 引用區塊                                           |
-| 程式碼 (Code)            | ``語言\n程式碼\n`            | 支援程式碼語法高亮                                 |
-| 書籤 (Bookmark)          | `[URL](URL)`                 | 轉換為 Markdown 連結                               |
-| 方程式 (Equation)        | `$$方程式$$`                 | 支援 LaTeX 數學方程式                              |
-
-目前尚未支援的 Notion Block 類型：
-
-- 表格 (Table)
-- 資料庫 (Database)
-- 目錄 (Table of Contents)
-- 同步區塊 (Synced Block)
-- 模板 (Template)
-- 連結預覽 (Link Preview)
-- 嵌入 (Embed)
-- 視頻 (Video)
-- 音頻 (Audio)
-- PDF
-
-## 進階設定
-
-### 自訂 Notion 欄位
-
-你可以在 `src/lib/config/notionConfig.ts` 中自訂 Notion 資料庫的欄位名稱。
-
-### 添加更多儲存庫
-
-在 `src/lib/config/notionConfig.ts` 的 `ALLOWED_REPOS` 陣列中添加更多儲存庫設定。
-
-### 自訂日誌格式
-
-你可以在 `src/lib/client/notionLog.ts` 中自訂日誌的格式和行為。
-
-## 貢獻指南
-
-歡迎提交 Pull Request 或開 Issue 來改進這個專案！
-
-## 授權
-
-本專案採用 MIT 授權。
-
----
-
-希望這個 README 能幫助你快速上手這個 Notion-GitHub Webhook 伺服器！如有任何問題，請隨時開 Issue 或聯繫我們。
+| Notion Block 類型        | Markdown 轉換          | 說明                                               |
+| ------------------------ | ---------------------- | -------------------------------------------------- |
+| 段落 (Paragraph)         | 純文字                 | 支援粗體、斜體、刪除線、下劃線、程式碼、連結等格式 |
+| 標題 1 (Heading 1)       | `# 標題`               | 一級標題                                           |
+| 標題 2 (Heading 2)       | `## 標題`              | 二級標題                                           |
+| 標題 3 (Heading 3)       | `### 標題`             | 三級標題                                           |
+| 圖片 (Image)             | `![圖片說明](圖片URL)` | 使用代理 API 避免 URL 過期問題                     |
+| 檔案 (File)              | `[檔案名稱](檔案URL)`  | 使用代理 API 避免 URL 過期問題                     |
+| 編號清單 (Numbered List) | `                      |                                                    |

@@ -7,26 +7,46 @@ import { NotionIssueConfig } from "./index";
 export const NOTION_FIELDS: NotionIssueConfig = {
   // 基本欄位
   fields: {
-    ISSUE_TITLE: "Issue Title",
-    ISSUE_BODY: "Issue Body",
-    ISSUE_TAG: "Issue Tag",
-    ISSUE_LINK: "issue_link",
-    REPOS: "Repository",
-    STATUS: "Status",
-    FILES: "files",
+    ISSUE_TITLE: {
+      fieldName: "Issue Title",
+      type: "title",
+      required: true,
+      description: "GitHub Issue 的標題",
+    },
+    ISSUE_BODY: {
+      fieldName: "Issue Body",
+      type: "rich_text",
+      required: false,
+      description: "GitHub Issue 的內容",
+    },
+    ISSUE_TAG: {
+      fieldName: "Issue Tag",
+      type: "multi_select",
+      required: false,
+      description: "GitHub Issue 的標籤",
+    },
+    ISSUE_LINK: {
+      fieldName: "issue_link",
+      type: "url",
+      required: false,
+      description: "GitHub Issue 的連結",
+    },
+    REPOS: {
+      fieldName: "Repository",
+      type: "select",
+      required: true,
+      description: "GitHub 儲存庫",
+    },
+    STATUS: {
+      fieldName: "Status",
+      type: "status",
+      required: true,
+      description: "GitHub Issue 的狀態",
+    },
   },
   STATUS_VALUES: {
     OPEN: "open",
     CLOSED: "closed",
   },
-  ALLOWED_REPOS: [
-    {
-      owner: "quan0715",
-      repo: "testRepo2",
-    },
-    {
-      owner: "quan0715",
-      repo: "test_repo",
-    },
-  ],
+  DATABASE_NAME: "Issue Report Demo",
 };

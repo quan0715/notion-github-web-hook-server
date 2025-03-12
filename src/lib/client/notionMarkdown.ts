@@ -13,7 +13,7 @@ import {
 const BASE_URL =
   process.env.NODE_ENV === "development"
     ? process.env.TEST_BASE_URL
-    : process.env.BASE_URL || "";
+    : process.env.NEXT_PUBLIC_BASE_URL || "";
 
 function richTextToMarkdown(richText: RichTextItemResponse[]) {
   // with annotation

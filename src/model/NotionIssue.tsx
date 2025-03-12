@@ -11,10 +11,14 @@ type NotionIssue = {
 };
 
 export function NotionPageDto(notionPage: PageObjectResponse): NotionIssue {
-  const titleField = notionPage.properties[NOTION_FIELDS.fields.ISSUE_TITLE];
-  const labelsField = notionPage.properties[NOTION_FIELDS.fields.ISSUE_TAG];
-  const reposField = notionPage.properties[NOTION_FIELDS.fields.REPOS];
-  const issueLinkField = notionPage.properties[NOTION_FIELDS.fields.ISSUE_LINK];
+  const titleField =
+    notionPage.properties[NOTION_FIELDS.fields.ISSUE_TITLE.fieldName];
+  const labelsField =
+    notionPage.properties[NOTION_FIELDS.fields.ISSUE_TAG.fieldName];
+  const reposField =
+    notionPage.properties[NOTION_FIELDS.fields.REPOS.fieldName];
+  const issueLinkField =
+    notionPage.properties[NOTION_FIELDS.fields.ISSUE_LINK.fieldName];
 
   // 處理 issue_link 欄位
   let issueLinkValue = "";
@@ -28,14 +32,9 @@ export function NotionPageDto(notionPage: PageObjectResponse): NotionIssue {
 
   // 處理 repo 欄位
   let issueRepo = undefined;
-  if (reposField.type === "select") {
-    const [owner, name] = reposField.select?.name.split("/") || [];
-    // check if owner and repo are in ALLOWED_REPOS
-    if (
-      NOTION_FIELDS.ALLOWED_REPOS.some(
-        (repo) => repo.owner === owner && repo.repo === name
-      )
-    ) {
+  if (reposField.type === "select" && reposField.select?.name) {
+    const [owner, name] = reposField.select.name.split("/") || [];
+    if (owner && name) {
       issueRepo = {
         owner,
         repo: name,

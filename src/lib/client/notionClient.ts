@@ -75,7 +75,7 @@ export const updateIssueStatus = async (
       return await notionClient.pages.update({
         page_id: pageId,
         properties: {
-          [NOTION_FIELDS.fields.STATUS]: {
+          [NOTION_FIELDS.fields.STATUS.fieldName]: {
             type: "status",
             status: {
               name: status,
@@ -99,7 +99,7 @@ export const updateIssueLink = async (
       return await notionClient.pages.update({
         page_id: pageId,
         properties: {
-          [NOTION_FIELDS.fields.ISSUE_LINK]: {
+          [NOTION_FIELDS.fields.ISSUE_LINK.fieldName]: {
             type: "url",
             url: issueUrl,
           },
