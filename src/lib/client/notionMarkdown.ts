@@ -81,7 +81,7 @@ function coverImageToMarkdown(block: ImageBlockObjectResponse) {
   return `![${caption}](${proxyUrl})`;
 }
 
-function fileToMarkdown(block: any) {
+function fileToMarkdown(block: FileBlockObjectResponse) {
   // 使用相對路徑，避免 Ngrok 警告頁面問題
   const proxyUrl = `${BASE_URL}/api/proxy/file?block_id=${block.id}`;
   // 獲取檔案標題，如果沒有則使用區塊 ID
