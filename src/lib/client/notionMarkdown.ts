@@ -12,7 +12,7 @@ import {
 const BASE_URL =
   process.env.NODE_ENV === "development"
     ? process.env.TEST_BASE_URL
-    : process.env.NEXT_PUBLIC_BASE_URL || "";
+    : process.env.BASE_URL || "";
 
 export const notionToMarkdown = async (pageId: string) => {
   const blocks = await collectPaginatedAPI(notionClient.blocks.children.list, {
