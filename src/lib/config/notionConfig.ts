@@ -13,22 +13,16 @@ export const NOTION_FIELDS: NotionIssueConfig = {
       required: true,
       description: "GitHub Issue 的標題",
     },
-    ISSUE_BODY: {
-      fieldName: "Issue Body",
-      type: "rich_text",
-      required: false,
-      description: "GitHub Issue 的內容",
-    },
     ISSUE_TAG: {
       fieldName: "Issue Tag",
       type: "multi_select",
-      required: false,
+      required: true,
       description: "GitHub Issue 的標籤",
     },
     ISSUE_LINK: {
       fieldName: "issue_link",
       type: "url",
-      required: false,
+      required: true,
       description: "GitHub Issue 的連結",
     },
     REPOS: {

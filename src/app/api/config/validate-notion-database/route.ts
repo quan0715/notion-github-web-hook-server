@@ -40,6 +40,11 @@ export async function GET() {
       url: string;
       missingFields: Array<{ name: string; description: string }>;
       invalidTypes: Array<{ name: string; expected: string; actual: string }>;
+      similarFields?: Array<{
+        expected: string;
+        actual: string;
+        similarity: string;
+      }>;
       isValid: boolean;
     }> = [];
 
@@ -65,16 +70,73 @@ export async function GET() {
       const fieldTypes: Record<string, string> = {};
       const databaseProperties = database.properties;
 
-      // 檢查欄位是否存在
+      // 建立資料庫欄位名稱的映射，以便進行不區分大小寫和空格的比較
+      const propertyNameMap = new Map<string, string>();
+      for (const propName in databaseProperties) {
+        // 移除所有空格並轉為小寫，用於比較
+        const normalizedName = propName.toLowerCase().replace(/\s+/g, "");
+        propertyNameMap.set(normalizedName, propName);
+      }
+
+      // 記錄相似但不完全相同的欄位名稱
+      const similarFields: Array<{
+        expected: string;
+        actual: string;
+        similarity: string;
+      }> = [];
+
+      // 檢查欄位是否存在（不區分大小寫和空格）
       for (const field of requiredFields) {
-        if (!databaseProperties[field.fieldName]) {
+        // 移除所有空格並轉為小寫，用於比較
+        const normalizedFieldName = field.fieldName
+          .toLowerCase()
+          .replace(/\s+/g, "");
+        const actualFieldName = propertyNameMap.get(normalizedFieldName);
+
+        if (!actualFieldName) {
+          // 欄位不存在，嘗試找到相似的欄位名稱
+          let mostSimilarField = "";
+          let highestSimilarity = 0;
+
+          for (const propName in databaseProperties) {
+            // 計算相似度（這裡使用一個簡單的方法，實際可以使用更複雜的算法）
+            const similarity = calculateSimilarity(field.fieldName, propName);
+            if (similarity > highestSimilarity && similarity > 0.5) {
+              // 相似度閾值
+              highestSimilarity = similarity;
+              mostSimilarField = propName;
+            }
+          }
+
+          if (mostSimilarField) {
+            similarFields.push({
+              expected: field.fieldName,
+              actual: mostSimilarField,
+              similarity: `${Math.round(highestSimilarity * 100)}%`,
+            });
+          }
+
+          // 欄位不存在
           missingFields.push({
             name: field.fieldName,
             description: field.description,
           });
         } else {
+          // 欄位存在，但名稱可能有大小寫或空格差異
           fieldTypes[field.fieldName] =
-            databaseProperties[field.fieldName].type;
+            databaseProperties[actualFieldName].type;
+
+          // 如果欄位名稱有差異，添加到相似欄位列表
+          if (actualFieldName !== field.fieldName) {
+            similarFields.push({
+              expected: field.fieldName,
+              actual: actualFieldName,
+              similarity: "名稱格式不同",
+            });
+            console.log(
+              `欄位名稱不符: 預期 "${field.fieldName}", 實際 "${actualFieldName}"`
+            );
+          }
         }
       }
 
@@ -87,17 +149,21 @@ export async function GET() {
 
       for (const [key, fieldDef] of Object.entries(NOTION_FIELDS.fields)) {
         const fieldName = fieldDef.fieldName;
+        // 移除所有空格並轉為小寫，用於比較
+        const normalizedFieldName = fieldName.toLowerCase().replace(/\s+/g, "");
+        const actualFieldName = propertyNameMap.get(normalizedFieldName);
 
         // 如果欄位存在但類型不符
         if (
-          databaseProperties[fieldName] &&
-          databaseProperties[fieldName].type !== fieldDef.type &&
+          actualFieldName &&
+          databaseProperties[actualFieldName] &&
+          databaseProperties[actualFieldName].type !== fieldDef.type &&
           !missingFields.some((f) => f.name === fieldName)
         ) {
           invalidTypes.push({
             name: fieldName,
             expected: fieldDef.type,
-            actual: databaseProperties[fieldName].type,
+            actual: databaseProperties[actualFieldName].type,
           });
         }
       }
@@ -108,6 +174,7 @@ export async function GET() {
         url: databaseUrl,
         missingFields,
         invalidTypes,
+        similarFields: similarFields.length > 0 ? similarFields : undefined,
         isValid: missingFields.length === 0 && invalidTypes.length === 0,
       });
     }
@@ -152,7 +219,36 @@ export async function GET() {
   }
 }
 
-// // 輔助函數：獲取欄位的預期類型
-// function getExpectedType(field: string): string {
-//   return NOTION_FIELDS.fieldTypes[field] || "未知";
-// }
+// 計算兩個字符串的相似度（使用 Levenshtein 距離的簡化版本）
+function calculateSimilarity(str1: string, str2: string): number {
+  const s1 = str1.toLowerCase();
+  const s2 = str2.toLowerCase();
+
+  // 如果其中一個是另一個的子字符串，給予較高的相似度
+  if (s1.includes(s2) || s2.includes(s1)) {
+    const longerLength = Math.max(s1.length, s2.length);
+    const shorterLength = Math.min(s1.length, s2.length);
+    return shorterLength / longerLength;
+  }
+
+  // 移除空格後比較
+  const s1NoSpace = s1.replace(/\s+/g, "");
+  const s2NoSpace = s2.replace(/\s+/g, "");
+
+  if (s1NoSpace === s2NoSpace) {
+    return 0.9; // 非常相似，只是空格不同
+  }
+
+  // 簡單的字符匹配率
+  let matches = 0;
+  const maxLength = Math.max(s1.length, s2.length);
+  const minLength = Math.min(s1.length, s2.length);
+
+  for (let i = 0; i < minLength; i++) {
+    if (s1[i] === s2[i]) {
+      matches++;
+    }
+  }
+
+  return matches / maxLength;
+}

@@ -28,7 +28,6 @@ export type NotionFieldDefinition = {
 export type NotionIssueConfig = {
   fields: {
     ISSUE_TITLE: NotionFieldDefinition;
-    ISSUE_BODY: NotionFieldDefinition;
     ISSUE_TAG: NotionFieldDefinition;
     ISSUE_LINK: NotionFieldDefinition;
     STATUS: NotionFieldDefinition;
