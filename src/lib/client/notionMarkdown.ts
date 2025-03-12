@@ -2,6 +2,7 @@ import { collectPaginatedAPI, isFullBlock } from "@notionhq/client";
 import { notionClient } from "./notionClient";
 import { isLogBlock } from "./notionLog";
 import { convertRichTextToPlainText } from "../helper/notion";
+import { RichTextItemResponse } from "@notionhq/client/build/src/api-endpoints";
 import {
   ImageBlockObjectResponse,
   FileBlockObjectResponse,
@@ -13,6 +14,43 @@ const BASE_URL =
   process.env.NODE_ENV === "development"
     ? process.env.TEST_BASE_URL
     : process.env.BASE_URL || "";
+
+function richTextToMarkdown(richText: RichTextItemResponse[]) {
+  // with annotation
+  // bold = true => **
+  // italic = true => *
+  // strikethrough = true => ~
+  // underline = true => _
+  // code = true => `
+  // color = true => color (not supported)
+  const result = richText.map((item) => {
+    let plain_text = item.plain_text;
+    if (item.type === "equation") {
+      return `$$${item.equation.expression}$$`;
+    }
+    if (item.annotations.bold) {
+      plain_text = `**${plain_text}**`;
+    }
+    if (item.annotations.italic) {
+      plain_text = `*${plain_text}*`;
+    }
+    if (item.annotations.strikethrough) {
+      plain_text = `~${plain_text}~`;
+    }
+    if (item.annotations.underline) {
+      plain_text = `<ins>${plain_text}</ins>`;
+    }
+    if (item.annotations.code) {
+      plain_text = `\`${plain_text}\``;
+    }
+    if (item.href) {
+      plain_text = `[${plain_text}](${item.href})`;
+    }
+    return plain_text;
+  });
+  console.log(result);
+  return result.join("");
+}
 
 export const notionToMarkdown = async (pageId: string) => {
   const blocks = await collectPaginatedAPI(notionClient.blocks.children.list, {
@@ -29,39 +67,35 @@ export const notionToMarkdown = async (pageId: string) => {
       }
       switch (block.type) {
         case "paragraph":
-          return convertRichTextToPlainText(block.paragraph.rich_text);
+          return richTextToMarkdown(block.paragraph.rich_text);
         case "heading_1":
-          return `# ${convertRichTextToPlainText(block.heading_1.rich_text)}`;
+          return `# ${richTextToMarkdown(block.heading_1.rich_text)}`;
         case "heading_2":
-          return `## ${convertRichTextToPlainText(block.heading_2.rich_text)}`;
+          return `## ${richTextToMarkdown(block.heading_2.rich_text)}`;
         case "heading_3":
-          return `### ${convertRichTextToPlainText(block.heading_3.rich_text)}`;
+          return `### ${richTextToMarkdown(block.heading_3.rich_text)}`;
         case "image":
           return coverImageToMarkdown(block);
         case "file":
           return fileToMarkdown(block);
         case "numbered_list_item":
-          return `1. ${convertRichTextToPlainText(
-            block.numbered_list_item.rich_text
-          )}`;
+          return `1. ${richTextToMarkdown(block.numbered_list_item.rich_text)}`;
         case "bulleted_list_item":
-          return `- ${convertRichTextToPlainText(
-            block.bulleted_list_item.rich_text
-          )}`;
+          return `- ${richTextToMarkdown(block.bulleted_list_item.rich_text)}`;
         case "divider":
           return "---";
         case "to_do":
-          return `- [${
-            block.to_do.checked ? "x" : " "
-          }] ${convertRichTextToPlainText(block.to_do.rich_text)}`;
+          return `- [${block.to_do.checked ? "x" : " "}] ${richTextToMarkdown(
+            block.to_do.rich_text
+          )}`;
         case "quote":
-          return `> ${convertRichTextToPlainText(block.quote.rich_text)}`;
+          return `> ${richTextToMarkdown(block.quote.rich_text)}`;
         case "code":
           return `\`\`\`${block.code.language}\n${convertRichTextToPlainText(
             block.code.rich_text
           )}\n\`\`\``;
-        case "callout":
-          return ``;
+        case "bookmark":
+          return `[${block.bookmark.url}](${block.bookmark.url})`;
         default:
           return "";
       }
