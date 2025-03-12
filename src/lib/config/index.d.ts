@@ -1,5 +1,3 @@
-import { IssueRepoInfo } from "@/lib/client";
-
 // Notion 資料庫屬性類型
 export type NotionPropertyType =
   | "title"

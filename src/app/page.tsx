@@ -219,7 +219,7 @@ export default function Home() {
       <div className="max-w-4xl mx-auto">
         <Card className="mb-8 border-none shadow-lg">
           <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-bold">
+            <CardTitle className="text-3xl font-bold break-words">
               Notion-GitHub Webhook 配置狀態
             </CardTitle>
             <CardDescription>
@@ -289,7 +289,7 @@ export default function Home() {
                         />
                       </div>
                     )}
-                    <span className="font-medium">
+                    <span className="font-medium text-center">
                       {validating === "notion"
                         ? "驗證中..."
                         : "驗證 Notion Token"}
@@ -312,7 +312,7 @@ export default function Home() {
                         />
                       </div>
                     )}
-                    <span className="font-medium">
+                    <span className="font-medium text-center">
                       {validating === "database"
                         ? "驗證中..."
                         : "驗證 Notion 資料庫"}
@@ -335,7 +335,7 @@ export default function Home() {
                         />
                       </div>
                     )}
-                    <span className="font-medium">
+                    <span className="font-medium text-center">
                       {validating === "github"
                         ? "驗證中..."
                         : "驗證 GitHub Token"}
@@ -393,23 +393,23 @@ export default function Home() {
                 </CardHeader>
                 <CardContent>
                   <div className="p-4 bg-blue-50/30 rounded-lg border border-blue-100">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 flex-wrap">
                       {notionUser.avatar_url ? (
                         <img
                           src={notionUser.avatar_url}
                           alt={notionUser.name || "Notion User"}
-                          className="w-12 h-12 rounded-full border-2 border-blue-200"
+                          className="w-12 h-12 rounded-full border-2 border-blue-200 flex-shrink-0"
                         />
                       ) : (
-                        <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-semibold text-lg border-2 border-blue-200">
+                        <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-semibold text-lg border-2 border-blue-200 flex-shrink-0">
                           {(notionUser.name || "N").charAt(0).toUpperCase()}
                         </div>
                       )}
                       <div>
-                        <h3 className="font-medium text-lg">
+                        <h3 className="font-medium text-lg break-words">
                           {notionUser.name || "Notion 用戶"}
                         </h3>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-muted-foreground break-all">
                           ID: {notionUser.id.substring(0, 8)}...
                         </p>
                       </div>
@@ -474,20 +474,22 @@ export default function Home() {
                               className="text-sm text-blue-500 hover:underline flex items-center gap-1"
                             >
                               <span>在 Notion 中查看</span>
-                              <ExternalLink className="w-3 h-3" />
+                              <ExternalLink className="w-3 h-3 flex-shrink-0" />
                             </Link>
 
                             <Button
                               variant="outline"
                               size="sm"
-                              className="text-xs h-7"
+                              className="text-xs h-7 whitespace-nowrap"
                               onClick={() => validateNotionRepos(db.id)}
                               disabled={validatingRepos === db.id}
                             >
                               {validatingRepos === db.id ? (
                                 <>
-                                  <div className="animate-spin rounded-full h-3 w-3 border-t-2 border-b-2 border-primary mr-1"></div>
-                                  驗證儲存庫選項中...
+                                  <div className="animate-spin rounded-full h-3 w-3 border-t-2 border-b-2 border-primary mr-1 flex-shrink-0"></div>
+                                  <span className="truncate">
+                                    驗證儲存庫選項中...
+                                  </span>
                                 </>
                               ) : (
                                 "驗證儲存庫選項"
@@ -512,9 +514,9 @@ export default function Home() {
                                           : "bg-red-50 border border-red-200"
                                       }`}
                                     >
-                                      <div className="flex items-center justify-between">
+                                      <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
                                         <div className="flex items-center gap-2">
-                                          <span className="font-medium">
+                                          <span className="font-medium break-all">
                                             {repo.name}
                                           </span>
                                         </div>
@@ -525,7 +527,7 @@ export default function Home() {
                                               repo.isValid
                                                 ? "bg-green-50 text-green-700"
                                                 : "bg-red-50 text-red-700"
-                                            }`}
+                                            } whitespace-nowrap`}
                                           >
                                             {repo.isValid ? "有效" : "無效"}
                                           </Badge>
@@ -545,7 +547,7 @@ export default function Home() {
                                               repo.canEditIssues && (
                                                 <Badge
                                                   variant="outline"
-                                                  className="bg-green-50 text-green-700"
+                                                  className="bg-green-50 text-green-700 whitespace-nowrap"
                                                 >
                                                   可操作 Issues
                                                 </Badge>
@@ -558,7 +560,7 @@ export default function Home() {
                                                 className="text-blue-500 hover:underline flex items-center gap-1"
                                               >
                                                 <span>查看儲存庫</span>
-                                                <ExternalLink className="w-3 h-3" />
+                                                <ExternalLink className="w-3 h-3 flex-shrink-0" />
                                               </Link>
                                             )}
                                           </div>
@@ -694,17 +696,17 @@ export default function Home() {
                 </CardHeader>
                 <CardContent>
                   <div className="p-4 bg-gray-50/30 rounded-lg border border-gray-100">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 flex-wrap">
                       <img
                         src={githubUser.avatar_url}
                         alt={githubUser.login}
-                        className="w-12 h-12 rounded-full border-2 border-gray-200"
+                        className="w-12 h-12 rounded-full border-2 border-gray-200 flex-shrink-0"
                       />
                       <div>
-                        <h3 className="font-medium text-lg">
+                        <h3 className="font-medium text-lg break-words">
                           {githubUser.name}
                         </h3>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-muted-foreground break-all">
                           @{githubUser.login}
                         </p>
                       </div>
