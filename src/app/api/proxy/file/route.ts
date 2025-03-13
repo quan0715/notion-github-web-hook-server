@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { NotionClient } from "@/lib/client/NotionClient";
+import { NotionClient } from "@/lib/server/NotionClient";
 import { isFullBlock } from "@notionhq/client";
 
 export async function GET(request: Request) {
