@@ -4,7 +4,8 @@ import { Client, isFullDatabase } from "@notionhq/client";
 import { NotionDatabaseValidateResponse } from "@/types";
 import { convertRichTextToPlainText } from "@/lib/helper/notion";
 import { NOTION_FIELDS } from "@/lib/config/notionConfig";
-import { GithubClient } from "@/lib/server/GithubClient";
+import { GithubClient } from "@/lib/client/GithubClient";
+
 export async function validateEnv() {
   const requiredEnvVars = [
     { name: "NOTION_SECRET", description: "Notion API SECRET Key" },

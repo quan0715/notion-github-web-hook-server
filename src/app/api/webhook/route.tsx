@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { NotionPageDto } from "@/model/NotionIssue";
-import { getIssue, createIssue, updateIssue } from "@/lib/server/GithubClient";
-import { updateIssueStatus, updateIssueLink } from "@/lib/server/NotionClient";
+import { getIssue, createIssue, updateIssue } from "@/lib/client/GithubClient";
+import { updateIssueStatus, updateIssueLink } from "@/lib/client/NotionClient";
 import { initializedLogBlock, appendLogEntry } from "@/lib/client/notionLog";
 import { notionToMarkdown } from "@/lib/client/notionMarkdown";
 export async function POST(request: NextRequest) {
