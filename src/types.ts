@@ -39,7 +39,7 @@ export interface NotionDatabaseValidateResponse {
 
 export interface GitHubUser {
   login: string;
-  name: string;
+  name: string | null;
   id: number;
   avatar_url: string;
 }

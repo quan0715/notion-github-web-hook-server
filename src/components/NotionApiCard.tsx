@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ValidationResult, NotionUser } from "@/types";
 import { RefreshButton } from "./RefreshButton";
-
+import { validateNotionApi } from "@/app/_actions/ValidateAction";
 export function NotionApiCard() {
   const [validationResult, setValidationResult] = useState<
     | (ValidationResult & {
@@ -22,11 +22,8 @@ export function NotionApiCard() {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/config/validate-notion-token", {
-        cache: "no-store",
-      });
-      const data = await response.json();
-      setValidationResult(data);
+      const response = await validateNotionApi();
+      setValidationResult(response);
     } catch (error) {
       console.error("Notion API 驗證時出錯:", error);
       setValidationResult({

@@ -12,9 +12,11 @@ export function GitHubApiCard() {
   const [validationResult, setValidationResult] = useState<
     | (ValidationResult & {
         details?: {
-          user: GitHubUser;
-          is_fine_grained: boolean;
-          is_expired: boolean;
+          user?: GitHubUser;
+          is_fine_grained?: boolean;
+          is_expired?: boolean;
+          token_scopes?: string;
+          error?: any;
         };
       })
     | null
@@ -27,7 +29,6 @@ export function GitHubApiCard() {
       const response = await validateGitHubApi();
       setValidationResult(response);
     } catch (error) {
-      console.error("GitHub API 驗證時出錯:", error);
       setValidationResult({
         success: false,
         message: "驗證 GitHub API 時發生錯誤",
@@ -50,11 +51,11 @@ export function GitHubApiCard() {
       ? validationResult.details.user
       : null;
   const tokenScopes =
-    validationResult?.success && validationResult.details
+    validationResult?.success && validationResult.details?.token_scopes
       ? validationResult.details.token_scopes
       : "";
   const isFineGrained =
-    validationResult?.success && validationResult.details
+    validationResult?.success && validationResult.details?.is_fine_grained
       ? validationResult.details.is_fine_grained
       : false;
 
@@ -81,7 +82,7 @@ export function GitHubApiCard() {
                   />
                 </div>
                 <div>
-                  <div className="font-medium">{user.name}</div>
+                  <div className="font-medium">{user.name || user.login}</div>
                   <div className="text-sm text-muted-foreground">
                     @{user.login}
                   </div>

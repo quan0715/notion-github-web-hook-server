@@ -117,16 +117,6 @@ export function NotionDatabaseCard({ db }: NotionDatabaseCardProps) {
                 </div>
               )}
             </div>
-
-            {/* 儲存庫選項驗證 */}
-            <div className="rounded-md border p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <GitBranch className="h-5 w-5 text-blue-500" />
-                  <h3 className="text-lg font-semibold">儲存庫選項驗證</h3>
-                </div>
-              </div>
-            </div>
           </div>
         )}
 
