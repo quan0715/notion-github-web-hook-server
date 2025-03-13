@@ -1,6 +1,6 @@
 import { Octokit } from "octokit";
 
-export const githubClient = new Octokit({
+export const GithubClient = new Octokit({
   auth: process.env.GITHUB_TOKEN,
 });
 
@@ -10,7 +10,7 @@ export const getIssue = async (
   issueNumber: number
 ) => {
   try {
-    const response = await githubClient.request(
+    const response = await GithubClient.request(
       "GET /repos/{owner}/{repo}/issues/{issue_number}",
       {
         owner,
@@ -40,7 +40,7 @@ export const createIssue = async ({
   body: string;
   labels: string[];
 }) => {
-  const response = await githubClient.request(
+  const response = await GithubClient.request(
     "POST /repos/{owner}/{repo}/issues",
     {
       owner,
@@ -71,7 +71,7 @@ export const updateIssue = async ({
   body: string;
   labels: string[];
 }) => {
-  const response = await githubClient.request(
+  const response = await GithubClient.request(
     "PATCH /repos/{owner}/{repo}/issues/{issue_number}",
     {
       owner,

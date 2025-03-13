@@ -14,16 +14,26 @@ export interface ValidationResult {
 export interface SimilarField {
   expected: string;
   actual: string;
-  similarity: string;
+  similarity: number;
 }
 
-export interface NotionDatabase {
+export interface NotionDatabaseValidateResponse {
   id: string;
   title: string;
   url: string;
-  missingFields: Array<{ name: string; description: string }>;
-  invalidTypes: Array<{ name: string; expected: string; actual: string }>;
-  similarFields?: Array<SimilarField>;
+  missingFields: {
+    fieldName: string;
+    description: string;
+    expectedType: string;
+    expected: string;
+    actualName: string;
+  }[];
+  invalidTypes: {
+    fieldName: string;
+    expected: string;
+    actual: string;
+  }[];
+  repoOptions?: string[];
   isValid: boolean;
 }
 
@@ -42,19 +52,9 @@ export interface NotionUser {
 }
 
 export interface NotionRepoOption {
+  id: string;
   name: string;
-  isValid: boolean;
-  hasIssues?: boolean;
-  canCreateIssues?: boolean;
-  canEditIssues?: boolean;
-  url?: string;
-  description?: string;
+  repoFullName: string | null;
+  valid: boolean;
   error?: string;
-  id?: number;
-  permission?: string;
-  private?: boolean;
-  owner?: {
-    login: string;
-    avatar_url: string;
-  };
 }

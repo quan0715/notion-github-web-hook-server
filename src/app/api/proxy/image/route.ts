@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { notionClient } from "@/lib/client/notionClient";
+import { NotionClient } from "@/lib/client/NotionClient";
 import { isFullBlock } from "@notionhq/client";
 
 export async function GET(request: Request) {
@@ -15,7 +15,7 @@ export async function GET(request: Request) {
     }
 
     // 從 Notion 獲取區塊資訊
-    const block = await notionClient.blocks.retrieve({ block_id: blockId });
+    const block = await NotionClient.blocks.retrieve({ block_id: blockId });
 
     if (!isFullBlock(block)) {
       return NextResponse.json(
@@ -83,7 +83,7 @@ export async function POST(request: Request) {
     }
 
     // 從 Notion 獲取區塊資訊
-    const block = await notionClient.blocks.retrieve({ block_id });
+    const block = await NotionClient.blocks.retrieve({ block_id });
 
     if (!isFullBlock(block)) {
       return NextResponse.json(

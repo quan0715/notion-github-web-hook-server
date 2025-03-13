@@ -37,6 +37,24 @@ export const NOTION_FIELDS: NotionIssueConfig = {
       required: true,
       description: "GitHub Issue 的狀態",
     },
+    TEST_FIELD_MISS: {
+      fieldName: "TEST_FIELD_MISS",
+      type: "rich_text",
+      required: false,
+      description: "測試欄位缺失",
+    },
+    TEST_FIELD_NAME_WRONG: {
+      fieldName: "TEST_FIELD_NAME_WRONG",
+      type: "rich_text",
+      required: false,
+      description: "測試欄位名稱錯誤",
+    },
+    TEST_FIELD_INVALID: {
+      fieldName: "TEST_FIELD_INVALID",
+      type: "select",
+      required: false,
+      description: "測試欄位類型錯誤",
+    },
   },
   STATUS_VALUES: {
     OPEN: "open",

@@ -1,5 +1,5 @@
 import { collectPaginatedAPI, isFullBlock } from "@notionhq/client";
-import { notionClient } from "./notionClient";
+import { NotionClient } from "./NotionClient";
 import { isLogBlock } from "./notionLog";
 import { convertRichTextToPlainText } from "../helper/notion";
 import { RichTextItemResponse } from "@notionhq/client/build/src/api-endpoints";
@@ -53,7 +53,7 @@ function richTextToMarkdown(richText: RichTextItemResponse[]) {
 }
 
 export const notionToMarkdown = async (pageId: string) => {
-  const blocks = await collectPaginatedAPI(notionClient.blocks.children.list, {
+  const blocks = await collectPaginatedAPI(NotionClient.blocks.children.list, {
     block_id: pageId,
   });
   return blocks

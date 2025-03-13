@@ -25,7 +25,7 @@ export async function GET() {
       },
       page_size: 10,
     });
-
+    console.log(response.results);
     if (response.results.length === 0) {
       return NextResponse.json({
         success: false,
@@ -45,6 +45,7 @@ export async function GET() {
         actual: string;
         similarity: string;
       }>;
+      repoOptions?: Array<string>;
       isValid: boolean;
     }> = [];
 
@@ -59,8 +60,7 @@ export async function GET() {
       // 獲取所有必要欄位
       const requiredFields = Object.entries(NOTION_FIELDS.fields)
         .filter(([_, fieldDef]) => fieldDef.required)
-        .map(([key, fieldDef]) => ({
-          key,
+        .map(([_, fieldDef]) => ({
           fieldName: fieldDef.fieldName,
           type: fieldDef.type,
           description: fieldDef.description || "",
@@ -168,6 +168,27 @@ export async function GET() {
         }
       }
 
+      // 獲取 Repos 欄位的選項
+      let repoOptions: string[] = [];
+      const reposFieldName = NOTION_FIELDS.fields.REPOS.fieldName;
+      // 移除所有空格並轉為小寫，用於比較
+      const normalizedReposFieldName = reposFieldName
+        .toLowerCase()
+        .replace(/\s+/g, "");
+      const actualReposFieldName = propertyNameMap.get(
+        normalizedReposFieldName
+      );
+
+      if (
+        actualReposFieldName &&
+        databaseProperties[actualReposFieldName] &&
+        databaseProperties[actualReposFieldName].type === "select"
+      ) {
+        const selectOptions =
+          databaseProperties[actualReposFieldName].select?.options || [];
+        repoOptions = selectOptions.map((option) => option.name);
+      }
+
       databaseResults.push({
         id: databaseId,
         title: databaseTitle,
@@ -175,13 +196,14 @@ export async function GET() {
         missingFields,
         invalidTypes,
         similarFields: similarFields.length > 0 ? similarFields : undefined,
+        repoOptions: repoOptions.length > 0 ? repoOptions : undefined,
         isValid: missingFields.length === 0 && invalidTypes.length === 0,
       });
     }
 
     // 找出有效的資料庫
     const validDatabases = databaseResults.filter((db) => db.isValid);
-
+    console.log(validDatabases);
     if (validDatabases.length > 0) {
       return NextResponse.json({
         success: true,

@@ -8,7 +8,7 @@ if (!process.env.NOTION_SECRET) {
   throw new Error("NOTION_SECRET is not set");
 }
 
-export const notionClient = new Client({
+export const NotionClient = new Client({
   auth: process.env.NOTION_SECRET,
 });
 
@@ -72,7 +72,7 @@ export const updateIssueStatus = async (
 ): Promise<UpdatePageResponse> => {
   return await NotionActionWrapper<UpdatePageResponse>({
     action: async () => {
-      return await notionClient.pages.update({
+      return await NotionClient.pages.update({
         page_id: pageId,
         properties: {
           [NOTION_FIELDS.fields.STATUS.fieldName]: {
@@ -96,7 +96,7 @@ export const updateIssueLink = async (
 ): Promise<UpdatePageResponse> => {
   return await NotionActionWrapper<UpdatePageResponse>({
     action: async () => {
-      return await notionClient.pages.update({
+      return await NotionClient.pages.update({
         page_id: pageId,
         properties: {
           [NOTION_FIELDS.fields.ISSUE_LINK.fieldName]: {

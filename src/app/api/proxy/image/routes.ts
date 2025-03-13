@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { notionClient } from "@/lib/client/notionClient";
+import { NotionClient } from "@/lib/client/NotionClient";
 import { isFullBlock } from "@notionhq/client";
 import { ImageBlockObjectResponse } from "@notionhq/client/build/src/api-endpoints";
 
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const block = await notionClient.blocks.retrieve({
+    const block = await NotionClient.blocks.retrieve({
       block_id: blockId,
     });
 

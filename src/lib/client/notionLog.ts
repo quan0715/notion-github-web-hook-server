@@ -4,7 +4,7 @@ import {
   PartialBlockObjectResponse,
 } from "@notionhq/client/build/src/api-endpoints";
 import { convertRichTextToPlainText, ApiColor } from "../helper/notion";
-import { notionClient, NotionActionWrapper } from "./notionClient";
+import { NotionClient, NotionActionWrapper } from "./NotionClient";
 // Log Block 相關常量和類型
 const LOG_BLOCK_TYPE = "callout";
 const LOG_TITLE = "Notion Action Log";
@@ -45,7 +45,7 @@ export const initializedLogBlock = async (pageId: string): Promise<string> => {
 
 const _initializedLogBlock = async (pageId: string): Promise<string> => {
   // check if the log block is already created
-  const blocks = await collectPaginatedAPI(notionClient.blocks.children.list, {
+  const blocks = await collectPaginatedAPI(NotionClient.blocks.children.list, {
     block_id: pageId,
   });
 
@@ -54,7 +54,7 @@ const _initializedLogBlock = async (pageId: string): Promise<string> => {
     for (const block of reversedBlocks) {
       if (isLogBlock(block)) {
         // clear the children
-        await notionClient.blocks.delete({
+        await NotionClient.blocks.delete({
           block_id: block.id,
         });
       }
@@ -62,7 +62,7 @@ const _initializedLogBlock = async (pageId: string): Promise<string> => {
   }
 
   // if not, create a new log block
-  const response = await notionClient.blocks.children.append({
+  const response = await NotionClient.blocks.children.append({
     block_id: pageId,
     children: [
       {
@@ -131,7 +131,7 @@ const _appendLogEntry = async (
       break;
   }
 
-  await notionClient.blocks.children.append({
+  await NotionClient.blocks.children.append({
     block_id: logId,
     children: [
       {
